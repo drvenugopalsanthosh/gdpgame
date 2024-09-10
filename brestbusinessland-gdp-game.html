@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brestbusinessland Economic Decision Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; max-width: 800px; margin: 0 auto; }
+        h1, h2 { color: #333; }
+        #decisions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        button { background: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
+        button:hover { background: #45a049; }
+        #result { background: #e9e9e9; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        #gdpChart { width: 100%; height: 300px; margin-top: 20px; display: none; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Brestbusinessland Economic Decision Game</h1>
+    <p>Current Year: <span id="currentYear">2023</span></p>
+    <p>Current GDP: €<span id="currentGDP">1000</span> billion</p>
+    <p>Make an economic decision for Brestbusinessland this year to see its impact on GDP:</p>
+
+    <div id="decisions">
+        <button onclick="makeDecision('Increase taxes')">Increase taxes</button>
+        <button onclick="makeDecision('Cut taxes')">Cut taxes</button>
+        <button onclick="makeDecision('Increase government spending')">Increase government spending</button>
+        <button onclick="makeDecision('Cut government spending')">Cut government spending</button>
+        <button onclick="makeDecision('Encourage investment')">Encourage investment</button>
+        <button onclick="makeDecision('Implement trade barriers')">Implement trade barriers</button>
+        <button onclick="makeDecision('Sign free trade agreement')">Sign free trade agreement</button>
+        <button onclick="makeDecision('Increase interest rates')">Increase interest rates</button>
+        <button onclick="makeDecision('Decrease interest rates')">Decrease interest rates</button>
+        <button onclick="makeDecision('Invest in education')">Invest in education</button>
+    </div>
+
+    <div id="result"></div>
+
+    <canvas id="gdpChart"></canvas>
+
+    <script>
+        let currentYear = 2023;
+        let gdp = 1000;
+        let gdpHistory = [{ year: currentYear, gdp: 1000 }];
+        let decisions = [];
+        let chart;
+
+        const decisionImpacts = {
+            'Increase taxes': -2,
+            'Cut taxes': 1.5,
+            'Increase government spending': 2.5,
+            'Cut government spending': -1.5,
+            'Encourage investment': 3,
+            'Implement trade barriers': -1,
+            'Sign free trade agreement': 2,
+            'Increase interest rates': -1.5,
+            'Decrease interest rates': 1,
+            'Invest in education': 3.5
+        };
+
+        function makeDecision(decision) {
+            let growthRate = decisionImpacts[decision] / 100; // Convert to percentage
+            gdp *= (1 + growthRate);
+            currentYear++;
+            gdpHistory.push({ year: currentYear, gdp: gdp });
+            decisions.push(decision);
+
+            updateDisplay(decision, growthRate);
+            updateChart();
+        }
+
+        function updateDisplay(decision, growthRate) {
+            document.getElementById('currentYear').textContent = currentYear;
+            document.getElementById('currentGDP').textContent = gdp.toFixed(2);
+
+            let resultHTML = `
+                <h2>${currentYear - 1} Decision Result for Brestbusinessland:</h2>
+                <p>You chose to: ${decision}</p>
+                <p>GDP Growth Rate: ${(growthRate * 100).toFixed(2)}%</p>
+                <p>New GDP: €${gdp.toFixed(2)} billion</p>
+            `;
+
+            if (decisions.length >= 10) {
+                resultHTML += `
+                    <h3>Game Over!</h3>
+                    <p>You've made decisions for Brestbusinessland for 10 years.</p>
+                    <p>Final GDP: €${gdp.toFixed(2)} billion</p>
+                    <p>Total GDP Growth: ${((gdp / 1000 - 1) * 100).toFixed(2)}%</p>
+                `;
+                document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            }
+
+            document.getElementById('result').innerHTML = resultHTML;
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('gdpChart').getContext('2d');
+            
+            if (decisions.length === 1) {
+                document.getElementById('gdpChart').style.display = 'block';
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: gdpHistory.map(data => data.year),
+                        datasets: [{
+                            label: 'GDP (Billions €)',
+                            data: gdpHistory.map(data => data.gdp),
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'GDP (Billions of Euros)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Year'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Brestbusinessland Annual GDP Changes Based on Decisions'
+                            }
+                        }
+                    }
+                });
+            } else if (chart) {
+                chart.data.labels = gdpHistory.map(data => data.year);
+                chart.data.datasets[0].data = gdpHistory.map(data => data.gdp);
+                chart.update();
+            }
+        }
+    </script>
+</body>
+</html>
