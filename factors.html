@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factors of Production Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 50px;
+        }
+        #game-container {
+            background-color: #fff;
+            border: 2px solid #333;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .factor {
+            margin: 10px 0;
+        }
+        .factor label {
+            font-weight: bold;
+        }
+        .output {
+            margin: 20px 0;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Factors of Production Game</h1>
+    <p>Manage the factors of production to maximize goods produced!</p>
+
+    <div class="factor">
+        <label for="land">Land:</label>
+        <input type="range" id="land" name="land" min="0" max="100" value="50">
+        <span id="land-value">50</span>
+    </div>
+
+    <div class="factor">
+        <label for="labor">Labor:</label>
+        <input type="range" id="labor" name="labor" min="0" max="100" value="50">
+        <span id="labor-value">50</span>
+    </div>
+
+    <div class="factor">
+        <label for="capital">Capital:</label>
+        <input type="range" id="capital" name="capital" min="0" max="100" value="50">
+        <span id="capital-value">50</span>
+    </div>
+
+    <div class="factor">
+        <label for="entrepreneurship">Entrepreneurship:</label>
+        <input type="range" id="entrepreneurship" name="entrepreneurship" min="0" max="100" value="50">
+        <span id="entrepreneurship-value">50</span>
+    </div>
+
+    <button onclick="calculateOutput()">Produce Goods</button>
+
+    <div class="output">
+        <p>Total Goods Produced:</p>
+        <div id="result">0</div>
+    </div>
+</div>
+
+<script>
+    // Update the display of the current value for each factor of production
+    document.getElementById('land').oninput = function () {
+        document.getElementById('land-value').innerText = this.value;
+    }
+    document.getElementById('labor').oninput = function () {
+        document.getElementById('labor-value').innerText = this.value;
+    }
+    document.getElementById('capital').oninput = function () {
+        document.getElementById('capital-value').innerText = this.value;
+    }
+    document.getElementById('entrepreneurship').oninput = function () {
+        document.getElementById('entrepreneurship-value').innerText = this.value;
+    }
+
+    // Function to calculate total goods produced based on factors of production
+    function calculateOutput() {
+        let land = parseInt(document.getElementById('land').value);
+        let labor = parseInt(document.getElementById('labor').value);
+        let capital = parseInt(document.getElementById('capital').value);
+        let entrepreneurship = parseInt(document.getElementById('entrepreneurship').value);
+
+        // Basic formula: Goods Produced = (Land + Labor + Capital) * Entrepreneurship / 100
+        let totalGoods = Math.floor((land + labor + capital) * (entrepreneurship / 100));
+
+        // Display result
+        document.getElementById('result').innerText = totalGoods;
+    }
+</script>
+
+</body>
+</html>
